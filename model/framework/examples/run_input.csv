@@ -1,1 +1,4 @@
-smiles
+input
+CN1CCN(CC1)c1ccc2ccccc2n1
+Cn1cc(CNCC2CCN(CC2)c2ncc(cn2)C(=O)NO)c2ccccc12
+CNC(=O)c1cccc(NC(=O)N2CCC(CC2)Oc2ccccc2Cl)c1
