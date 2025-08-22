@@ -2,7 +2,7 @@ Identifier: eos6m2k
 Slug: mole-xgboost
 Status: In progress
 Title: MolE-XGBoost
-Description: A publicly available dataset accounting for the effect of 1, 197 marketed
+Description: A publicly available dataset accounting for the effect of 1,197 marketed
   drugs against 40 bacterial strains was used to train an XGBoost model, termed MolE-XGBoost,
   that predicts growth inhibition using MolE pre-trained representations. The model
   enabled a concise assessment of the antimicrobial potential of chemical compounds,
@@ -11,35 +11,63 @@ Description: A publicly available dataset accounting for the effect of 1, 197 ma
   have been missed by standard models.
 Deployment:
 - Local
-- Online
-Source: Local, Online
-Source Type: Internal, Replicated, External
-Task: Annotation, Representation, Sampling
-Subtask: Property calculation or prediction, Activity prediction, Featurization, Projection,
-  Similarity search, Generation
+Source: Local
+Source Type: External
+Task: Annotation
+Subtask: Activity prediction
 Input:
 - Compound
 Input Dimension: 1
 Output:
-- Value
-- Score
-- Compound
 - Probability
-- Experimental value
-- '...'
-Output Dimension: 1
-Output Consistency: Fixed, Variable
-Interpretation: 'The output of this template model should be interpreted like this.
-
-  '
+Output Dimension: 40
+Output Consistency: Fixed
+Interpretation: 'Growth inhibition probability prediction of 40 bacterial strains.'
 Tag:
 - Antimicrobial activity
 Biomedical Area:
-- Biomedical Area 1
-- Biomedical Area 2
+- Antimicrobial resistance
 Target Organism:
-- Target Organism 1
-- Target Organism 2
+- Akkermansia muciniphila
+- Bacteroides caccae
+- Bacteroides fragilis et
+- Bacteroides fragilis nt
+- Bacteroides ovatus
+- Bacteroides thetaiotaomicron
+- Bacteroides uniformis
+- Bacteroides vulgatus
+- Bacteroides xylanisolvens
+- Bifidobacterium adolescentis
+- Bifidobacterium longum
+- Bilophila wadsworthia
+- Blautia obeum
+- Clostridium bolteae
+- Clostridium difficile
+- Clostridium perfringens
+- Clostridium ramosum
+- Clostridium saccharolyticum
+- Collinsella aerofaciens
+- Coprococcus comes
+- Dorea formicigenerans
+- Eggerthella lenta
+- Escherichia coli ed1a
+- Escherichia coli iai1
+- Eubacterium eligens
+- Eubacterium rectale
+- Fusobacterium nucleatum
+- Lactobacillus paracasei
+- Odoribacter splanchnicus
+- Parabacteroides distasonis
+- Parabacteroides merdae
+- Prevotella copri
+- Roseburia hominis
+- Roseburia intestinalis
+- Ruminococcus bromii
+- Ruminococcus gnavus
+- Ruminococcus torques
+- Streptococcus parasanguinis
+- Streptococcus salivarius
+- Veillonella parvula
 Publication Type: Peer reviewed, Preprint, Other
 Publication Year: 2025
 Publication: https://www.nature.com/articles/s41467-025-58804-4

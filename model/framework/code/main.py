@@ -2,6 +2,7 @@
 import os
 import csv
 import sys
+import subprocess
 from rdkit import Chem
 from rdkit.Chem.Descriptors import MolWt
 
@@ -12,28 +13,18 @@ output_file = sys.argv[2]
 # current file directory
 root = os.path.dirname(os.path.abspath(__file__))
 
-# my model
-def my_model(smiles_list):
-    return [MolWt(Chem.MolFromSmiles(smi)) for smi in smiles_list]
+# in this model, the file mole_antimicrobial_prediction.py takes care of everything
 
+cmd = [
+    "python",
+    "mole_antimicrobial_prediction.py",
+    "../examples/run_input.csv",  # input file
+    "../examples/run_output.csv",  # output file
+    "--smiles_input",  # flag to indicate SMILES input
+    "--smiles_colname", "input",  # column name for SMILES
+    "--mole_model", "../../checkpoints",  # path to the folder with the Mole models for compound representation
+    "--strain_categories", "../../checkpoints/maier_screening_results.tsv.gz",  # path to the TSV file with the strain categories
+    "--xgboost_model", "../../checkpoints/MolE-XGBoost-08.03.2024_14.20.pkl"  # path to the XGBoost model
+]
 
-# read SMILES from .csv file, assuming one column with header
-with open(input_file, "r") as f:
-    reader = csv.reader(f)
-    next(reader)  # skip header
-    smiles_list = [r[0] for r in reader]
-
-# run model
-outputs = my_model(smiles_list)
-
-#check input and output have the same lenght
-input_len = len(smiles_list)
-output_len = len(outputs)
-assert input_len == output_len
-
-# write output in a .csv file
-with open(output_file, "w") as f:
-    writer = csv.writer(f)
-    writer.writerow(["value"])  # header
-    for o in outputs:
-        writer.writerow([o])
+subprocess.run(cmd, cwd=root)

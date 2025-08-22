@@ -278,6 +278,8 @@ def antimicrobial_potential(score_df, strain_filepath):
 
 def main():
 
+    # Function adapted by Ersilia team
+
     # Read input arguments
     args = parse_arguments()
 
@@ -301,8 +303,9 @@ def main():
     # Report the antimcrobial predictive probablities
     pred_df = pred_df.drop(columns=["0"])
     pred_df = pred_df.rename(columns={"1": "antimicrobial_predictive_probability"})
-    print(pred_df)
+    #print(pred_df)
 
+    # Format results in a py dict
     probs = {}
     features = set()
     for i,j in zip(pred_df.index, pred_df["antimicrobial_predictive_probability"]):
@@ -313,15 +316,16 @@ def main():
             probs[smi] = {}
         probs[smi][feat] = j
 
+    # Create df and save results
     df = []
     features = sorted(features)
-    print("\n".join(features))
+    #print("\n".join(features))  # to create the run_columns.csv
     for smi in smiles:
         df.append([smi] + [probs[smi][feat] for feat in features])
 
     df = pd.DataFrame(df, columns=["smiles"] + features)
+    df = df.drop(columns=["smiles"])
     df.to_csv(args.output_filepath, sep=',', index=False)
-    print(df)
 
 
 if __name__ == "__main__":
