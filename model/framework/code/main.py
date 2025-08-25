@@ -12,14 +12,15 @@ output_file = sys.argv[2]
 
 # current file directory
 root = os.path.dirname(os.path.abspath(__file__))
+print(root)
 
 # in this model, the file mole_antimicrobial_prediction.py takes care of everything
 
 cmd = [
     "python",
     "mole_antimicrobial_prediction.py",
-    "../examples/run_input.csv",  # input file
-    "../examples/run_output.csv",  # output file
+    os.path.join(root, "..", input_file),  # input file
+    os.path.join(root, "..", output_file),  # output file
     "--smiles_input",  # flag to indicate SMILES input
     "--smiles_colname", "input",  # column name for SMILES
     "--mole_model", "../../checkpoints",  # path to the folder with the Mole models for compound representation
