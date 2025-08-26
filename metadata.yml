@@ -19,7 +19,7 @@ Input:
 - Compound
 Input Dimension: 1
 Output:
-- Probability
+- Score
 Output Dimension: 40
 Output Consistency: Fixed
 Interpretation: 'Growth inhibition probability prediction of 40 bacterial strains.'
