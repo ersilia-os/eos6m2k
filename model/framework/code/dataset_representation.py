@@ -225,6 +225,11 @@ class MoleculeDataset(Dataset):
         super(Dataset, self).__init__()
 
         # Gather the SMILES and the corresponding IDs
+        if "smiles" in smile_df.columns:
+            smile_column = "smiles"
+        elif "input" in smile_df.columns:
+            smile_column = "input"
+        
         self.smiles_data = smile_df[smile_column].tolist()
         self.id_data = smile_df[id_column].tolist()
 
