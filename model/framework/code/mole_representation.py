@@ -66,7 +66,7 @@ def parse_arguments():
 
 
 # A FUNCTION TO READ SMILES from file 
-def read_smiles(data_path, smile_col="rdkit_no_salt", id_col="id_col"):
+def read_smiles(data_path, smile_col="smiles", id_col="id_col"):
 
     """
     Read SMILES data from a file and remove invalid SMILES.
@@ -82,8 +82,15 @@ def read_smiles(data_path, smile_col="rdkit_no_salt", id_col="id_col"):
     
     # Read the data
     smile_df = pd.read_csv(data_path, sep='\t')
-    smile_df = smile_df[[smile_col]]
-
+    if "smiles" in smile_df.columns:
+        smile_df = smile_df[["smiles"]]
+        smile_col = "smiles"
+    elif "input" in smile_df.columns:
+        smile_df = smile_df[["input"]]
+        smile_col = "input"
+    else:
+        smile_df = smile_df[[smile_col]]
+    
     # Make sure ID column is interpreted as str
     smile_df[id_col] = [f"mol_{c}" for c,i in enumerate(smile_df[smile_col])]
     smile_df[id_col] = [i for c,i in enumerate(smile_df[smile_col])]
