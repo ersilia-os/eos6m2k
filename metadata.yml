@@ -2,72 +2,75 @@ Identifier: eos6m2k
 Slug: mole-xgboost
 Status: In progress
 Title: MolE-XGBoost
-Description: A publicly available dataset accounting for the effect of 1,197 marketed
-  drugs against 40 bacterial strains was used to train an XGBoost model, termed MolE-XGBoost,
-  that predicts growth inhibition using MolE pre-trained representations. The model
-  enabled a concise assessment of the antimicrobial potential of chemical compounds,
-  including the re-discovery of de novo structurally distinct antibiotic candidates
-  and the identification of broad-spectrum activity in other compounds that would
-  have been missed by standard models.
+Description: A publicly available dataset accounting for the effect of 1,197 
+  marketed drugs against 40 bacterial strains was used to train an XGBoost 
+  model, termed MolE-XGBoost, that predicts growth inhibition using MolE 
+  pre-trained representations. The model enabled a concise assessment of the 
+  antimicrobial potential of chemical compounds, including the re-discovery of 
+  de novo structurally distinct antibiotic candidates and the identification of 
+  broad-spectrum activity in other compounds that would have been missed by 
+  standard models.
 Deployment:
-- Local
+  - Local
 Source: Local
 Source Type: External
 Task: Annotation
 Subtask: Activity prediction
 Input:
-- Compound
+  - Compound
 Input Dimension: 1
 Output:
-- Score
+  - Score
 Output Dimension: 40
 Output Consistency: Fixed
-Interpretation: 'Growth inhibition probability prediction of 40 bacterial strains.'
+Interpretation: Growth inhibition probability prediction of 40 bacterial 
+  strains.
 Tag:
-- Antimicrobial activity
+  - Antimicrobial activity
 Biomedical Area:
-- Antimicrobial resistance
+  - Antimicrobial resistance
 Target Organism:
-- Akkermansia muciniphila
-- Bacteroides caccae
-- Bacteroides fragilis
-- Bacteroides ovatus
-- Bacteroides thetaiotaomicron
-- Bacteroides uniformis
-- Bacteroides vulgatus
-- Bacteroides xylanisolvens
-- Bifidobacterium adolescentis
-- Bifidobacterium longum
-- Bilophila wadsworthia
-- Blautia obeum
-- Clostridium bolteae
-- Clostridium difficile
-- Clostridium perfringens
-- Clostridium ramosum
-- Clostridium saccharolyticum
-- Collinsella aerofaciens
-- Coprococcus comes
-- Dorea formicigenerans
-- Eggerthella lenta
-- Escherichia coli
-- Eubacterium eligens
-- Eubacterium rectale
-- Fusobacterium nucleatum
-- Lactobacillus paracasei
-- Odoribacter splanchnicus
-- Parabacteroides distasonis
-- Parabacteroides merdae
-- Prevotella copri
-- Roseburia hominis
-- Roseburia intestinalis
-- Ruminococcus bromii
-- Ruminococcus gnavus
-- Ruminococcus torques
-- Streptococcus parasanguinis
-- Streptococcus salivarius
-- Veillonella parvula
+  - Akkermansia muciniphila
+  - Bacteroides caccae
+  - Bacteroides fragilis
+  - Bacteroides ovatus
+  - Bacteroides thetaiotaomicron
+  - Bacteroides uniformis
+  - Bacteroides vulgatus
+  - Bacteroides xylanisolvens
+  - Bifidobacterium adolescentis
+  - Bifidobacterium longum
+  - Bilophila wadsworthia
+  - Blautia obeum
+  - Clostridium bolteae
+  - Clostridium difficile
+  - Clostridium perfringens
+  - Clostridium ramosum
+  - Clostridium saccharolyticum
+  - Collinsella aerofaciens
+  - Coprococcus comes
+  - Dorea formicigenerans
+  - Eggerthella lenta
+  - Escherichia coli
+  - Eubacterium eligens
+  - Eubacterium rectale
+  - Fusobacterium nucleatum
+  - Lactobacillus paracasei
+  - Odoribacter splanchnicus
+  - Parabacteroides distasonis
+  - Parabacteroides merdae
+  - Prevotella copri
+  - Roseburia hominis
+  - Roseburia intestinalis
+  - Ruminococcus bromii
+  - Ruminococcus gnavus
+  - Ruminococcus torques
+  - Streptococcus parasanguinis
+  - Streptococcus salivarius
+  - Veillonella parvula
 Publication Type: Peer reviewed
 Publication Year: 2025
 Publication: https://www.nature.com/articles/s41467-025-58804-4
 Source Code: https://github.com/rolayoalarcon/mole_antimicrobial_potential
 License: MIT
+Incorporation Date: '2025-08-21'
