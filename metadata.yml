@@ -1,6 +1,6 @@
 Identifier: eos6m2k
 Slug: mole-xgboost
-Status: In progress
+Status: Ready
 Title: MolE-XGBoost
 Description: A publicly available dataset accounting for the effect of 1,197 
   marketed drugs against 40 bacterial strains was used to train an XGBoost 
@@ -74,6 +74,18 @@ Publication: https://www.nature.com/articles/s41467-025-58804-4
 Source Code: https://github.com/rolayoalarcon/mole_antimicrobial_potential
 License: MIT
 Incorporation Date: '2025-08-21'
+Last Packaging Date: '2025-08-27'
+Release: v1.0.0
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip
+DockerHub: https://hub.docker.com/r/ersiliaos/eos6m2k
+Docker Architecture:
+  - AMD64
+  - ARM64
 Model Size: 1554.0
 Environment Size: 6380.0
+Image Size: 8654.27
+Computational Performance 1: 31.7
+Computational Performance 2: 21.49
+Computational Performance 3: 21.98
+Computational Performance 4: 72.67
+Computational Performance 5: 299.0
