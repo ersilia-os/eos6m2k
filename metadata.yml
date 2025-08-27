@@ -74,3 +74,6 @@ Publication: https://www.nature.com/articles/s41467-025-58804-4
 Source Code: https://github.com/rolayoalarcon/mole_antimicrobial_potential
 License: MIT
 Incorporation Date: '2025-08-21'
+S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip
+Model Size: 1554.0
+Environment Size: 6380.0
