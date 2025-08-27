@@ -2,8 +2,7 @@
 
 A publicly available dataset accounting for the effect of 1,197 marketed drugs against 40 bacterial strains was used to train an XGBoost model, termed MolE-XGBoost, that predicts growth inhibition using MolE pre-trained representations. The model enabled a concise assessment of the antimicrobial potential of chemical compounds, including the re-discovery of de novo structurally distinct antibiotic candidates and the identification of broad-spectrum activity in other compounds that would have been missed by standard models.
 
-This model was incorporated on 2025-08-21.
-
+This model was incorporated on 2025-08-21.Last packaged on 2025-08-27.
 
 ## Information
 ### Identifiers
@@ -44,12 +43,19 @@ _10 of 40 columns are shown_
 ### Source and Deployment
 - **Source:** `Local`
 - **Source Type:** `External`
+- **DockerHub**: [https://hub.docker.com/r/ersiliaos/eos6m2k](https://hub.docker.com/r/ersiliaos/eos6m2k)
+- **Docker Architecture:** `AMD64`, `ARM64`
 - **S3 Storage**: [https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip](https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip)
 
 ### Resource Consumption
 - **Model Size (Mb):** `1554`
 - **Environment Size (Mb):** `6380`
+- **Image Size (Mb):** `8654.27`
 
+**Computational Performance (seconds):**
+- 10 inputs: `31.7`
+- 100 inputs: `21.98`
+- 10000 inputs: `299`
 
 ### References
 - **Source Code**: [https://github.com/rolayoalarcon/mole_antimicrobial_potential](https://github.com/rolayoalarcon/mole_antimicrobial_potential)
