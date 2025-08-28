@@ -1,4 +1,7 @@
 name,type,direction,description
+apscore_total,float,high,Global Antimicrobial Potential score
+apscore_gpositive,float,high,Antimicrobial Potential score for gram-positive microbes
+apscore_gnegative,float,high,Antimicrobial Potential score for gram-negative microbes
 akkermansia_muciniphila_nt5021,float,high,Probability to inhibit the growth of Akkermansia muciniphila (NT5021)
 bacteroides_caccae_nt5050,float,high,Probability to inhibit the growth of Bacteroides caccae (NT5050)
 bacteroides_fragilis_et_nt5033,float,high,Probability to inhibit the growth of Bacteroides fragilis (ET) (NT5033)

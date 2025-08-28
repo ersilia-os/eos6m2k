@@ -23,7 +23,7 @@ class MoleAntimicrobialPredictor:
         app_threshold=0.04374140128493309,
         min_nkill=10,
         strain_categories=os.path.join(chkpt_root, "checkpoints/maier_screening_results.tsv.gz"),
-        gram_information="raw_data/maier_microbiome/strain_info_SF2.xlsx",
+        gram_information=os.path.join(chkpt_root, "checkpoints/strain_info_SF2.xlsx"),
         device="auto",
     ):
         self.smiles_input = smiles_input
@@ -90,17 +90,20 @@ class MoleAntimicrobialPredictor:
             skiprows=[0,1,43,44,45,46,47,48,49,50,51,52,53,54],
             index_col="NT data base",
         )
-        score_df["chem_id"] = score_df["pred_id"].str.split(":", expand=True)[0]
-        score_df["strain_name"] = score_df["pred_id"].str.split(":", expand=True)[1]
+        score_df["pred_id"] = score_df['ids']
+        score_df["chem_id"] = score_df["pred_id"].str.split(" --- ", expand=True)[0]
+        score_df["strain_name"] = score_df["pred_id"].str.split(" --- ", expand=True)[1]
         pred_df = self._gram_stain(score_df, maier_strains)
-        apscore_total = pred_df.groupby("chem_id")["1"].apply(gmean).to_frame().rename(columns={"1": "apscore_total"})
+        # apscore_total = pred_df.groupby("chem_id")["1"].apply(gmean).to_frame().rename(columns={"1": "apscore_total"})
+        apscore_total = pred_df.groupby("chem_id")["antimicrobial_predictive_probability"].apply(gmean).to_frame().rename(columns={"antimicrobial_predictive_probability": "apscore_total"})
         apscore_total["apscore_total"] = np.log(apscore_total["apscore_total"])
-        apscore_gram = pred_df.groupby(["chem_id", "gram_stain"])["1"].apply(gmean).unstack().rename(columns={"negative": "apscore_gnegative","positive": "apscore_gpositive"})
+        apscore_gram = pred_df.groupby(["chem_id", "gram_stain"])["antimicrobial_predictive_probability"].apply(gmean).unstack().rename(columns={"negative": "apscore_gnegative","positive": "apscore_gpositive"})
         apscore_gram["apscore_gnegative"] = np.log(apscore_gram["apscore_gnegative"])
         apscore_gram["apscore_gpositive"] = np.log(apscore_gram["apscore_gpositive"])
-        inhibted_total = pred_df.groupby("chem_id")["growth_inhibition"].sum().to_frame().rename(columns={"growth_inhibition": "ginhib_total"})
-        inhibted_gram = pred_df.groupby(["chem_id", "gram_stain"])["growth_inhibition"].sum().unstack().rename(columns={"negative": "ginhib_gnegative","positive": "ginhib_gpositive"})
-        return apscore_total.join(apscore_gram).join(inhibted_total).join(inhibted_gram)
+        # inhibted_total = pred_df.groupby("chem_id")["growth_inhibition"].sum().to_frame().rename(columns={"growth_inhibition": "ginhib_total"})
+        # inhibted_gram = pred_df.groupby(["chem_id", "gram_stain"])["growth_inhibition"].sum().unstack().rename(columns={"negative": "ginhib_gnegative","positive": "ginhib_gpositive"})
+        # return apscore_total.join(apscore_gram).join(inhibted_total).join(inhibted_gram)
+        return apscore_total.join(apscore_gram)
 
     def predict(self, input_filepath):
         udl_representation = self._read_representation(input_filepath)
@@ -110,6 +113,11 @@ class MoleAntimicrobialPredictor:
         y_pred = model_abx.predict_proba(X_input)
         pred_df = pd.DataFrame(y_pred, columns=["0","1"], index=X_input.index)
         pred_df = pred_df.drop(columns=["0"]).rename(columns={"1": "antimicrobial_predictive_probability"})
+        # pred_df["growth_inhibition"] = pred_df["1"].apply(lambda x: 1 if x >= args.app_threshold else 0)
+        pred_df_ = pd.DataFrame(pred_df).reset_index()
+        agg_df = self._antimicrobial_potential(pred_df_, self.gram_information)
+        # agg_df["broad_spectrum"] = agg_df["ginhib_total"].apply(lambda x: 1 if x >= args.min_nkill else 0)
+        agg_df = agg_df.to_dict(orient="index")
         probs = {}
         features = set()
         for i, j in zip(pred_df.index, pred_df["antimicrobial_predictive_probability"]):
@@ -122,8 +130,10 @@ class MoleAntimicrobialPredictor:
         rows = []
         features = sorted(features)
         for smi in smiles:
-            rows.append([smi] + [probs[smi][feat] for feat in features])
-        df = pd.DataFrame(rows, columns=["smiles"] + features).drop(columns=["smiles"])
+            p = [probs[smi][feat] for feat in features]
+            p_global = [agg_df[smi]["apscore_total"], agg_df[smi]["apscore_gpositive"], agg_df[smi]["apscore_gnegative"]]
+            rows.append([smi] + p_global + p)
+        df = pd.DataFrame(rows, columns=["smiles"] + ["apscore_total", "apscore_gpositive", "apscore_gnegative"] + features).drop(columns=["smiles"])
         return df
 
     def run(self, input_filepath, output_filepath):
