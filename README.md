@@ -28,6 +28,9 @@ This model was incorporated on 2025-08-21.Last packaged on 2025-08-27.
 Below are the **Output Columns** of the model:
 | Name | Type | Direction | Description |
 |------|------|-----------|-------------|
+| apscore_total | float | high | Global Antimicrobial Potential score |
+| apscore_gpositive | float | high | Antimicrobial Potential score for gram-positive microbes |
+| apscore_gnegative | float | high | Antimicrobial Potential score for gram-negative microbes |
 | akkermansia_muciniphila_nt5021 | float | high | Probability to inhibit the growth of Akkermansia muciniphila (NT5021) |
 | bacteroides_caccae_nt5050 | float | high | Probability to inhibit the growth of Bacteroides caccae (NT5050) |
 | bacteroides_fragilis_et_nt5033 | float | high | Probability to inhibit the growth of Bacteroides fragilis (ET) (NT5033) |
@@ -35,11 +38,8 @@ Below are the **Output Columns** of the model:
 | bacteroides_ovatus_nt5054 | float | high | Probability to inhibit the growth of Bacteroides ovatus (NT5054) |
 | bacteroides_thetaiotaomicron_nt5004 | float | high | Probability to inhibit the growth of Bacteroides thetaiotaomicron (NT5004) |
 | bacteroides_uniformis_nt5002 | float | high | Probability to inhibit the growth of Bacteroides uniformis (NT5002) |
-| bacteroides_vulgatus_nt5001 | float | high | Probability to inhibit the growth of Bacteroides vulgatus (NT5001) |
-| bacteroides_xylanisolvens_nt5064 | float | high | Probability to inhibit the growth of Bacteroides xylanisolvens (NT5064) |
-| bifidobacterium_adolescentis_nt5022 | float | high | Probability to inhibit the growth of Bifidobacterium adolescentis (NT5022) |
 
-_10 of 40 columns are shown_
+_10 of 43 columns are shown_
 ### Source and Deployment
 - **Source:** `Local`
 - **Source Type:** `External`
