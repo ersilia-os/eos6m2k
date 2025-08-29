@@ -74,7 +74,7 @@ Publication: https://www.nature.com/articles/s41467-025-58804-4
 Source Code: https://github.com/rolayoalarcon/mole_antimicrobial_potential
 License: MIT
 Incorporation Date: '2025-08-21'
-Last Packaging Date: '2025-08-28'
+Last Packaging Date: '2025-08-29'
 Release: v1.0.0
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos6m2k
@@ -84,8 +84,8 @@ Docker Architecture:
 Model Size: 777.0
 Environment Size: 6382.0
 Image Size: 8656.07
-Computational Performance 1: 32.42
-Computational Performance 2: 22.24
-Computational Performance 3: 22.64
-Computational Performance 4: 76.46
-Computational Performance 5: 320.84
+Computational Performance 1: 32.69
+Computational Performance 2: 22.08
+Computational Performance 3: 22.61
+Computational Performance 4: 76.65
+Computational Performance 5: 321.43
