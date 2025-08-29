@@ -1,4 +1,4 @@
-# MolE-XGBoost
+# MolE antimicrobial potential
 
 A publicly available dataset accounting for the effect of 1,197 marketed drugs against 40 bacterial strains was used to train an XGBoost model, termed MolE-XGBoost, that predicts growth inhibition using MolE pre-trained representations. The model enabled a concise assessment of the antimicrobial potential of chemical compounds, including the re-discovery of de novo structurally distinct antibiotic candidates and the identification of broad-spectrum activity in other compounds that would have been missed by standard models.
 
@@ -7,7 +7,7 @@ This model was incorporated on 2025-08-21.Last packaged on 2025-08-28.
 ## Information
 ### Identifiers
 - **Ersilia Identifier:** `eos6m2k`
-- **Slug:** `mole-xgboost`
+- **Slug:** `mole-antimicrobial`
 
 ### Domain
 - **Task:** `Annotation`
