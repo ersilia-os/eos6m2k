@@ -138,5 +138,5 @@ class MoleAntimicrobialPredictor:
 
     def run(self, input_filepath, output_filepath):
         df = self.predict(input_filepath)
-        df.to_csv(output_filepath, sep=',', index=False)
-        return output_filepath
+        # df.to_csv(output_filepath, sep=',', index=False)
+        return df
