@@ -1,6 +1,6 @@
 Identifier: eos6m2k
 Slug: mole-antimicrobial
-Status: Ready
+Status: In maintenance
 Title: MolE antimicrobial potential
 Description: A publicly available dataset accounting for the effect of 1,197 
   marketed drugs against 40 bacterial strains was used to train an XGBoost 
