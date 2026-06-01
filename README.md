@@ -21,7 +21,7 @@ This model was incorporated on 2025-08-21.Last packaged on 2025-09-05.
 - **Input Dimension:** `1`
 
 ### Output
-- **Output Dimension:** `40`
+- **Output Dimension:** `43`
 - **Output Consistency:** `Fixed`
 - **Interpretation:** Growth inhibition probability prediction of 40 bacterial strains.
 
