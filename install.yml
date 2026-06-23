@@ -1,7 +1,7 @@
 python: "3.10"
 commands:
     - ["pip", "pyyaml", "6.0.2"]
-    - ["pip", "torch", "2.6.0", "--index-url", "https://download.pytorch.org/whl/cpu"]
+    - ["pip", "torch", "2.6.0+cpu", "--extra-index-url", "https://download.pytorch.org/whl/cpu"]
     - ["pip", "numpy", "1.23.5"]
     - ["pip", "pandas", "2.2.3"]
     - ["pip", "torch-geometric", "2.6.1"]
