@@ -1,0 +1,43 @@
+name: zz-diagnose-fetch
+
+on:
+  push:
+    branches:
+      - fix/torch-cpu-and-release-v2.0.2
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: "3.10"
+          auto-activate-base: true
+
+      - name: Setup ersilia + git-lfs
+        shell: bash -l {0}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y git-lfs
+          git lfs install
+          python -m pip install -q "git+https://github.com/ersilia-os/ersilia.git"
+
+      - name: Diagnostic verbose fetch (surface the real error)
+        shell: bash -l {0}
+        run: |
+          set +e
+          rm -f /tmp/served_stderr.log
+          mkdir -p /tmp/m
+          cp -r "$GITHUB_WORKSPACE" /tmp/m/eos6m2k
+          rm -rf /tmp/m/eos6m2k/.git
+          echo "================ ersilia -v fetch --from_dir (FULL OUTPUT) ================"
+          ersilia -v fetch eos6m2k --from_dir /tmp/m/eos6m2k 2>&1 | tail -250
+          echo "FETCH_EXIT=${PIPESTATUS[0]}"
+          echo "================ MODEL RUN STDERR (/tmp/served_stderr.log) ================"
+          cat /tmp/served_stderr.log 2>/dev/null || echo "(run.sh never wrote it -> model run step not reached)"
+          echo "================ any standard_run.log under ~/eos ================"
+          find "$HOME/eos" -name "standard_run.log" -exec echo "--- {} ---" \; -exec cat {} \; 2>/dev/null || echo "(none)"
