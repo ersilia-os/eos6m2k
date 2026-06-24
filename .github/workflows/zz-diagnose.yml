@@ -18,18 +18,24 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + capture standard_run.log before deletion
+      - name: Fetch + capture served input & output CSVs before deletion
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          rm -f /tmp/captured_srl.log
+          rm -f /tmp/cap_in.csv /tmp/cap_out.csv /tmp/cap_srl.log
           conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
           FPID=$!
           while kill -0 $FPID 2>/dev/null; do
-            f=$(find "$HOME/eos" -name standard_run.log 2>/dev/null | head -1)
-            if [ -n "$f" ]; then cp "$f" /tmp/captured_srl.log 2>/dev/null; fi
-            sleep 0.3
+            i=$(find "$HOME/eos" -name example_standard_input.csv 2>/dev/null | head -1)
+            o=$(find "$HOME/eos" -name example_standard_output.csv 2>/dev/null | head -1)
+            s=$(find "$HOME/eos" -name standard_run.log 2>/dev/null | head -1)
+            [ -n "$i" ] && cp "$i" /tmp/cap_in.csv 2>/dev/null
+            [ -n "$o" ] && cp "$o" /tmp/cap_out.csv 2>/dev/null
+            [ -n "$s" ] && cp "$s" /tmp/cap_srl.log 2>/dev/null
+            sleep 0.2
           done
-          echo "================ CAPTURED standard_run.log (the real serve+run output) ================"
-          cat /tmp/captured_srl.log 2>/dev/null || echo "(not captured)"
+          echo "================ SERVED INPUT (example_standard_input.csv) ================"
+          cat /tmp/cap_in.csv 2>/dev/null | head -6 || echo "(not captured)"
+          echo "================ SERVED OUTPUT (example_standard_output.csv) ================"
+          cat /tmp/cap_out.csv 2>/dev/null | head -4 | cut -c1-300 || echo "(not captured)"
           echo "================ fetch tail ================"
-          tail -25 /tmp/fetch.log
+          tail -6 /tmp/fetch.log
