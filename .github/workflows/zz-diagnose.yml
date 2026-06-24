@@ -24,7 +24,7 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y git-lfs
           git lfs install
-          python -m pip install -q "git+https://github.com/ersilia-os/ersilia.git"
+          python -m pip install -q "ersilia[test] @ git+https://github.com/ersilia-os/ersilia.git"
 
       - name: Reproduce the exact failing test command (ersilia test --shallow)
         shell: bash -l {0}
@@ -35,8 +35,8 @@ jobs:
           rm -rf eos6m2k_src && cp -r "$GITHUB_WORKSPACE" /tmp/eos6m2k_src && rm -rf /tmp/eos6m2k_src/.git
           mkdir -p /tmp/run && cd /tmp/run && cp -r /tmp/eos6m2k_src eos6m2k
           echo "================ ersilia -v test --shallow --from_dir (FULL OUTPUT) ================"
-          yes | ersilia -v test eos6m2k --shallow --from_dir eos6m2k 2>&1 | tail -300
-          echo "TEST_EXIT=${PIPESTATUS[1]}"
+          ersilia -v test eos6m2k --shallow --from_dir eos6m2k </dev/null 2>&1 | tail -300
+          echo "TEST_EXIT=${PIPESTATUS[0]}"
           echo "================ MODEL RUN STDERR (/tmp/served_stderr.log) ================"
           cat /tmp/served_stderr.log 2>/dev/null || echo "(model run step not reached / no stderr)"
           echo "================ standard_run.log(s) ================"
