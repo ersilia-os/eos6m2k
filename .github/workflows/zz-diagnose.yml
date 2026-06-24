@@ -14,14 +14,22 @@ jobs:
         run: |
           rm -rf *
           git clone https://github.com/miquelduranfrigola/eos6m2k.git
-      - name: Install ersilia (3.12 base, like CI)
+      - name: Install ersilia (3.12 base)
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Plain verbose fetch in 3.12 base + served stderr
+      - name: Fetch + capture standard_run.log before deletion
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          rm -f /tmp/served_stderr.log
-          conda run -n base bash -c "python --version; ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" 2>&1 | tail -120 || true
-          echo "================ MODEL RUN STDERR ================"
-          cat /tmp/served_stderr.log 2>/dev/null || echo "(not reached)"
+          rm -f /tmp/captured_srl.log
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          while kill -0 $FPID 2>/dev/null; do
+            f=$(find "$HOME/eos" -name standard_run.log 2>/dev/null | head -1)
+            if [ -n "$f" ]; then cp "$f" /tmp/captured_srl.log 2>/dev/null; fi
+            sleep 0.3
+          done
+          echo "================ CAPTURED standard_run.log (the real serve+run output) ================"
+          cat /tmp/captured_srl.log 2>/dev/null || echo "(not captured)"
+          echo "================ fetch tail ================"
+          tail -25 /tmp/fetch.log
