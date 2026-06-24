@@ -1,0 +1,27 @@
+name: zz-diagnose-fetch
+on:
+  push:
+    branches: [fix/torch-cpu-and-release-v2.0.2]
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with: { lfs: true, fetch-depth: 0, ref: fix/torch-cpu-and-release-v2.0.2 }
+      - uses: conda-incubator/setup-miniconda@v3
+        with: { auto-update-conda: true, python-version: "3.12", auto-activate-base: false }
+      - name: Clone repo
+        run: |
+          rm -rf *
+          git clone https://github.com/miquelduranfrigola/eos6m2k.git
+      - name: Install ersilia
+        run: |
+          conda run -n base git-lfs install
+          conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
+      - name: Fetch (main.py self-logs to /tmp/main_diag.log)
+        env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
+        run: |
+          rm -f /tmp/main_diag.log
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 || true
+          echo "================ /tmp/main_diag.log (what main.py received & did during serve) ================"
+          cat /tmp/main_diag.log 2>/dev/null || echo "(main.py never ran during serve!)"
