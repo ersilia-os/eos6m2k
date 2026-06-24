@@ -56,7 +56,7 @@ class MoleAntimicrobialPredictor:
             return pd.read_csv(input_filepath, sep='\t', index_col=0)
 
     def _prep_ohe(self, categories):
-        ohe = OneHotEncoder(sparse=False)
+        ohe = OneHotEncoder(sparse_output=False)
         ohe.fit(pd.DataFrame(categories))
         return pd.DataFrame(ohe.transform(pd.DataFrame(categories)), columns=categories, index=categories)
 
@@ -80,7 +80,7 @@ class MoleAntimicrobialPredictor:
 
     def _gram_stain(self, label_df, strain_info_df):
         df_label = label_df.copy()
-        df_label["nt_number"] = df_label["strain_name"].apply(lambda x: re.search(".*?\((NT\d+)\)", x).group(1))
+        df_label["nt_number"] = df_label["strain_name"].apply(lambda x: re.search(r".*?\((NT\d+)\)", x).group(1))
         gram_dict = strain_info_df[["Gram stain"]].to_dict()["Gram stain"]
         df_label["gram_stain"] = df_label["nt_number"].apply(gram_dict.get)
         return df_label
