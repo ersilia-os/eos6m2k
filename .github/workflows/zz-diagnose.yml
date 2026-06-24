@@ -21,26 +21,22 @@ jobs:
           python-version: "3.12"
           auto-activate-base: false
 
-      - name: Clone repo (mirror reusable workflow exactly)
+      - name: Clone repo
         run: |
           rm -rf *
           git clone https://github.com/miquelduranfrigola/eos6m2k.git
 
-      - name: Install dependencies (mirror reusable workflow exactly)
+      - name: Install ersilia (base = python 3.12, like CI)
         run: |
           conda run -n base git-lfs install
-          conda run -n base python -m pip install 'ersilia[test] @ git+https://github.com/ersilia-os/ersilia.git'
+          conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
 
-      - name: Run exact test command + surface served error
+      - name: Plain verbose fetch in python 3.12 base (output NOT swallowed)
         env:
           MODEL_ID: eos6m2k
           PYTHONUNBUFFERED: "1"
         run: |
           rm -f /tmp/served_stderr.log
-          conda run -n base bash -c "ersilia -v test $MODEL_ID --shallow --from_dir $MODEL_ID" 2>&1 | tail -250 || true
+          conda run -n base bash -c "python --version; ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" 2>&1 | tail -300 || true
           echo "================ MODEL RUN STDERR (/tmp/served_stderr.log) ================"
           cat /tmp/served_stderr.log 2>/dev/null || echo "(model run step not reached)"
-          echo "================ standard_run.log(s) ================"
-          find "$HOME/eos" -name "standard_run.log" -exec echo "--- {} ---" \; -exec cat {} \; 2>/dev/null || echo "(none)"
-          echo "================ ${MODEL_ID}-test.json ================"
-          cat ${MODEL_ID}-test.json 2>/dev/null || echo "(no json)"
