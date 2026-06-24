@@ -26,18 +26,18 @@ jobs:
           git lfs install
           python -m pip install -q "git+https://github.com/ersilia-os/ersilia.git"
 
-      - name: Diagnostic verbose fetch (surface the real error)
+      - name: Reproduce the exact failing test command (ersilia test --shallow)
         shell: bash -l {0}
         run: |
           set +e
           rm -f /tmp/served_stderr.log
-          mkdir -p /tmp/m
-          cp -r "$GITHUB_WORKSPACE" /tmp/m/eos6m2k
-          rm -rf /tmp/m/eos6m2k/.git
-          echo "================ ersilia -v fetch --from_dir (FULL OUTPUT) ================"
-          ersilia -v fetch eos6m2k --from_dir /tmp/m/eos6m2k 2>&1 | tail -250
-          echo "FETCH_EXIT=${PIPESTATUS[0]}"
+          # mirror the reusable workflow: a fresh clone dir named eos6m2k
+          rm -rf eos6m2k_src && cp -r "$GITHUB_WORKSPACE" /tmp/eos6m2k_src && rm -rf /tmp/eos6m2k_src/.git
+          mkdir -p /tmp/run && cd /tmp/run && cp -r /tmp/eos6m2k_src eos6m2k
+          echo "================ ersilia -v test --shallow --from_dir (FULL OUTPUT) ================"
+          yes | ersilia -v test eos6m2k --shallow --from_dir eos6m2k 2>&1 | tail -300
+          echo "TEST_EXIT=${PIPESTATUS[1]}"
           echo "================ MODEL RUN STDERR (/tmp/served_stderr.log) ================"
-          cat /tmp/served_stderr.log 2>/dev/null || echo "(run.sh never wrote it -> model run step not reached)"
-          echo "================ any standard_run.log under ~/eos ================"
+          cat /tmp/served_stderr.log 2>/dev/null || echo "(model run step not reached / no stderr)"
+          echo "================ standard_run.log(s) ================"
           find "$HOME/eos" -name "standard_run.log" -exec echo "--- {} ---" \; -exec cat {} \; 2>/dev/null || echo "(none)"
