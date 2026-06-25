@@ -18,18 +18,16 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + capture main.py log + session 500s
+      - name: Fetch + capture main.py log (set +e)
+        shell: bash {0}
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
+          set +e
           rm -f /tmp/main_diag.log
-          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
-          FPID=$!
-          : > /tmp/sess.txt
-          while kill -0 $FPID 2>/dev/null; do
-            grep -rhniE "successfully served|500 Server Error|Connection refused|Batch of size|empty output" "$HOME/eos/sessions" 2>/dev/null >> /tmp/sess.txt
-            sleep 0.5
-          done
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1
+          echo "FETCH_DONE rc=$?"
           echo "================ /tmp/main_diag.log (did main.py run? error?) ================"
           cat /tmp/main_diag.log 2>/dev/null || echo "(main.py NEVER ran)"
-          echo "================ session serve/500 lines (captured during fetch) ================"
-          sort -u /tmp/sess.txt | grep -iE "served|500|Batch|empty" | head -20
+          echo "================ session serve/500 lines ================"
+          grep -rhiE "successfully served|500 Server Error|Batch of size|empty output|Internal Server" "$HOME/eos/sessions" 2>/dev/null | sort -u | head -15
+          echo "(end)"
