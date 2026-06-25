@@ -11,7 +11,9 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with: { auto-update-conda: true, python-version: "3.12", auto-activate-base: false }
       - name: Clone repo
-        run: { rm -rf *; git clone https://github.com/miquelduranfrigola/eos6m2k.git; }
+        run: |
+          rm -rf *
+          git clone https://github.com/miquelduranfrigola/eos6m2k.git
       - name: Install ersilia
         run: |
           conda run -n base git-lfs install
