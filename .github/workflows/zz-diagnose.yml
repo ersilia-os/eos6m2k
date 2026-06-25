@@ -18,16 +18,28 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + capture main.py log (set +e)
+      - name: Fetch + curl the /run 500 body live
         shell: bash {0}
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
           set +e
-          rm -f /tmp/main_diag.log
-          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1
-          echo "FETCH_DONE rc=$?"
-          echo "================ /tmp/main_diag.log (did main.py run? error?) ================"
-          cat /tmp/main_diag.log 2>/dev/null || echo "(main.py NEVER ran)"
-          echo "================ session serve/500 lines ================"
-          grep -rhiE "successfully served|500 Server Error|Batch of size|empty output|Internal Server" "$HOME/eos/sessions" 2>/dev/null | sort -u | head -15
-          echo "(end)"
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          PORT=""
+          for i in $(seq 1 240); do
+            P=$(grep -rhoE "127.0.0.1:[0-9]+|port [0-9]+|:[0-9]{5}" "$HOME/eos/sessions" /tmp/fetch.log 2>/dev/null | grep -oE "[0-9]{4,5}" | sort -u | tail -1)
+            if [ -n "$P" ]; then
+              if curl -s -m 3 "http://127.0.0.1:$P/" >/dev/null 2>&1 || curl -s -m 3 "http://127.0.0.1:$P/health" >/dev/null 2>&1; then PORT=$P; fi
+            fi
+            if [ -n "$PORT" ]; then
+              echo "==== server up on $PORT; curl /run ===="
+              curl -s -m 30 -X POST "http://127.0.0.1:$PORT/run?fetch_cache=False&save_cache=False" -H "Content-Type: application/json" -d '["CCO","c1ccccc1"]' -o /tmp/run_resp.txt -w "HTTP %{http_code}\n"
+              echo "---- /run response body ----"; head -c 4000 /tmp/run_resp.txt; echo
+              break
+            fi
+            sleep 1
+          done
+          [ -z "$PORT" ] && echo "(never found a live server port)"
+          wait $FPID 2>/dev/null
+          echo "==== server-side logs (uvicorn/app) anywhere ===="
+          for L in $(find "$HOME/eos" /tmp -name "*.log" 2>/dev/null | head -40); do if grep -qiE "Traceback|Internal Server|Error|500" "$L" 2>/dev/null; then echo "### $L"; grep -iE "Traceback|Error|Internal|500|Exception|line [0-9]" "$L" | head -20; fi; done
