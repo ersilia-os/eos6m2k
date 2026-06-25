@@ -1,0 +1,46 @@
+name: zz-diagnose-fetch
+on:
+  push:
+    branches: [fix/torch-cpu-and-release-v2.0.2]
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with: { lfs: true, fetch-depth: 0, ref: fix/torch-cpu-and-release-v2.0.2 }
+      - uses: conda-incubator/setup-miniconda@v3
+        with: { auto-update-conda: true, python-version: "3.12", auto-activate-base: false }
+      - name: Clone repo
+        run: |
+          rm -rf *
+          git clone https://github.com/miquelduranfrigola/eos6m2k.git
+      - name: Install ersilia
+        run: |
+          conda run -n base git-lfs install
+          conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
+      - name: Fetch + capture bundle run.sh, env, server log
+        env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
+        run: |
+          rm -rf /tmp/cap; mkdir -p /tmp/cap
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          while kill -0 $FPID 2>/dev/null; do
+            r=$(find "$HOME/eos" -path "*framework/run.sh" 2>/dev/null | head -1)
+            [ -n "$r" ] && cp "$r" /tmp/cap/bundle_run.sh 2>/dev/null
+            # capture any uvicorn/server logs ersilia writes
+            for L in $(find "$HOME/eos" "$HOME/.ersilia" -name "*.log" 2>/dev/null); do cp "$L" "/tmp/cap/$(echo $L | tr / _)" 2>/dev/null; done
+            sleep 0.2
+          done
+          echo "================ BUNDLE run.sh (ersilia-generated; which python?) ================"
+          cat /tmp/cap/bundle_run.sh 2>/dev/null || echo "(not captured)"
+          echo "================ conda envs after fetch ================"
+          conda env list
+          echo "================ does the model env python exist + import the model? ================"
+          PYEXE=$(awk '{print $1}' /tmp/cap/bundle_run.sh 2>/dev/null | head -1)
+          echo "python_exe from run.sh: $PYEXE"
+          ls -la "$PYEXE" 2>/dev/null || echo "python_exe MISSING"
+          "$PYEXE" -c "import torch,xgboost,sklearn,scipy,numpy,rdkit,torch_geometric,ersilia_pack_utils; print('model env imports OK')" 2>&1 | tail -5 || echo "import test failed"
+          echo "================ captured log files ================"
+          ls -la /tmp/cap/ 2>/dev/null
+          echo "================ fetch tail ================"
+          tail -8 /tmp/fetch.log
