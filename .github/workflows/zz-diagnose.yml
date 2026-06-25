@@ -1,0 +1,45 @@
+name: zz-diagnose-fetch
+on:
+  push:
+    branches: [fix/torch-cpu-and-release-v2.0.2]
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with: { lfs: true, fetch-depth: 0, ref: fix/torch-cpu-and-release-v2.0.2 }
+      - uses: conda-incubator/setup-miniconda@v3
+        with: { auto-update-conda: true, python-version: "3.12", auto-activate-base: false }
+      - name: Clone repo AND CHECKOUT MY FIX BRANCH (mirror real test but with the fix)
+        run: |
+          rm -rf *
+          git clone https://github.com/miquelduranfrigola/eos6m2k.git
+          cd eos6m2k
+          git checkout fix/torch-cpu-and-release-v2.0.2
+          git lfs pull
+          echo "== install.yml xgboost in tested code =="; grep xgboost install.yml
+      - name: Install ersilia
+        run: |
+          conda run -n base git-lfs install
+          conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
+      - name: Fetch the FIX-BRANCH code + curl /run
+        shell: bash {0}
+        env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
+        run: |
+          set +e
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          PORT=""
+          for i in $(seq 1 260); do
+            P=$(grep -rhoE ":[0-9]{4,5}" "$HOME/eos/sessions" /tmp/fetch.log 2>/dev/null | grep -oE "[0-9]{4,5}" | sort -u | tail -1)
+            if [ -n "$P" ] && curl -s -m 3 "http://127.0.0.1:$P/healthz" >/dev/null 2>&1; then PORT=$P; fi
+            [ -n "$PORT" ] && break; sleep 1
+          done
+          echo "PORT=$PORT"
+          if [ -n "$PORT" ]; then
+            curl -s -m 30 -X POST "http://127.0.0.1:$PORT/run?fetch_cache=False&save_cache=False" -H "Content-Type: application/json" -d '["CCO","c1ccccc1"]' -o /tmp/r.txt -w "HTTP %{http_code}\n"
+            echo "---- /run body (first 600c) ----"; head -c 600 /tmp/r.txt; echo
+          fi
+          wait $FPID 2>/dev/null
+          echo "==== fetch result ===="; grep -niE "all empty|done successfully|fetched successfully" /tmp/fetch.log | tail -2
+          echo "==== output sample ===="; grep -A5 "This is the output" /tmp/fetch.log | sed -E 's/^[^Z]*Z //' | head -7
