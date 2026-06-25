@@ -15,7 +15,6 @@ from rdkit.Chem import DataStructs
 from rdkit import RDLogger                           
 from rdkit.Chem.SaltRemover import SaltRemover    
 
-from rdkit.Chem import Draw
 from rdkit.Chem import Descriptors
 from rdkit.Chem import MolSurf
 from rdkit.Chem import rdMolDescriptors

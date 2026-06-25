@@ -17,7 +17,7 @@ class MoleAntimicrobialPredictor:
         smiles_input=True,
         smiles_colname="input",
         chemid_colname="chem_id",
-        xgboost_model=os.path.join(chkpt_root, "checkpoints/MolE-XGBoost-08.03.2024_14.20.pkl"),
+        xgboost_model=os.path.join(chkpt_root, "checkpoints/MolE-XGBoost-08.03.2024_14.20.json"),
         mole_model=os.path.join(chkpt_root, "checkpoints"),
         aggregate_scores=False,
         app_threshold=0.04374140128493309,
@@ -56,7 +56,7 @@ class MoleAntimicrobialPredictor:
             return pd.read_csv(input_filepath, sep='\t', index_col=0)
 
     def _prep_ohe(self, categories):
-        ohe = OneHotEncoder(sparse=False)
+        ohe = OneHotEncoder(sparse_output=False)
         ohe.fit(pd.DataFrame(categories))
         return pd.DataFrame(ohe.transform(pd.DataFrame(categories)), columns=categories, index=categories)
 
@@ -74,12 +74,13 @@ class MoleAntimicrobialPredictor:
         return xpred
 
     def _load_xgb_model(self, xgb_path):
-        with open(xgb_path, "rb") as file:
-            return pickle.load(file)
+        model = XGBClassifier()
+        model.load_model(xgb_path)
+        return model
 
     def _gram_stain(self, label_df, strain_info_df):
         df_label = label_df.copy()
-        df_label["nt_number"] = df_label["strain_name"].apply(lambda x: re.search(".*?\((NT\d+)\)", x).group(1))
+        df_label["nt_number"] = df_label["strain_name"].apply(lambda x: re.search(r".*?\((NT\d+)\)", x).group(1))
         gram_dict = strain_info_df[["Gram stain"]].to_dict()["Gram stain"]
         df_label["gram_stain"] = df_label["nt_number"].apply(gram_dict.get)
         return df_label
@@ -110,7 +111,11 @@ class MoleAntimicrobialPredictor:
         smiles = udl_representation.index.tolist()
         X_input = self._add_strains(udl_representation, self.strain_categories)
         model_abx = self._load_xgb_model(self.xgboost_model)
-        y_pred = model_abx.predict_proba(X_input)
+        # Predict positionally (pass a numpy array, not the DataFrame): the model
+        # was trained with column names that differ from the runtime feature names,
+        # and xgboost >=2 strictly validates DataFrame feature names. Column order
+        # is preserved, so positional prediction reproduces the original output.
+        y_pred = model_abx.predict_proba(X_input.values)
         pred_df = pd.DataFrame(y_pred, columns=["0","1"], index=X_input.index)
         pred_df = pred_df.drop(columns=["0"]).rename(columns={"1": "antimicrobial_predictive_probability"})
         # pred_df["growth_inhibition"] = pred_df["1"].apply(lambda x: 1 if x >= args.app_threshold else 0)
