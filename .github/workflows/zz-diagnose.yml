@@ -18,11 +18,16 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch (python 3.10 env) + show output + env
+      - name: Fetch + capture ALL ersilia session logs (serve detail)
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 || true
-          echo "==== conda envs ===="; conda env list
-          echo "==== eos6m2k env python present? ===="; ls -la /usr/share/miniconda/envs/eos6m2k/bin/python 2>/dev/null || echo "MISSING"
-          echo "==== result ===="; grep -niE "all empty|done successfully|fetched successfully" /tmp/fetch.log | tail -3
-          echo "==== output sample ===="; grep -A6 "This is the output" /tmp/fetch.log | sed -E 's/^[^Z]*Z //' | head -8
+          rm -rf /tmp/cap; mkdir -p /tmp/cap
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          while kill -0 $FPID 2>/dev/null; do
+            for L in $(find "$HOME/eos/sessions" -name "*.log" 2>/dev/null); do cp "$L" "/tmp/cap/$(basename $(dirname $L))_$(basename $L)" 2>/dev/null; done
+            sleep 0.2
+          done
+          echo "==== captured session logs ===="; ls -la /tmp/cap/
+          echo "==== concatenated session logs (grep serve/run/run.sh/error/empty/main) ===="
+          for f in /tmp/cap/*.log; do echo "### $f"; grep -niE "run.sh|main.py|serve|uvicorn|port|empty|error|traceback|exception|exit|fail|/code/|model run|outcome|No such" "$f" 2>/dev/null | head -30; done
