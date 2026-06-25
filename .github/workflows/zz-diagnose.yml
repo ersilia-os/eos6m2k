@@ -18,16 +18,22 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + capture ALL ersilia session logs (serve detail)
+      - name: Fetch + timestamp env-python existence + locate real model python
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          rm -rf /tmp/cap; mkdir -p /tmp/cap
-          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          EXP=/usr/share/miniconda/envs/eos6m2k/bin/python
+          ( conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 ) &
           FPID=$!
-          while kill -0 $FPID 2>/dev/null; do
-            for L in $(find "$HOME/eos/sessions" -name "*.log" 2>/dev/null); do cp "$L" "/tmp/cap/$(basename $(dirname $L))_$(basename $L)" 2>/dev/null; done
-            sleep 0.2
-          done
-          echo "==== captured session logs ===="; ls -la /tmp/cap/
-          echo "==== concatenated session logs (grep serve/run/run.sh/error/empty/main) ===="
-          for f in /tmp/cap/*.log; do echo "### $f"; grep -niE "run.sh|main.py|serve|uvicorn|port|empty|error|traceback|exception|exit|fail|/code/|model run|outcome|No such" "$f" 2>/dev/null | head -30; done
+          ( while kill -0 $FPID 2>/dev/null; do
+              if [ -e "$EXP" ]; then S=PRESENT; else S=MISSING; fi
+              echo "$(date +%H:%M:%S) expected_python=$S"
+              sleep 1
+            done ) | uniq -f1 | tail -40 > /tmp/timeline.txt
+          echo "==== expected python path: $EXP ===="
+          echo "==== timeline of expected python existence during fetch ===="
+          cat /tmp/timeline.txt
+          echo "==== ALL python exes under miniconda/envs and eos dirs matching eos6m2k ===="
+          find /usr/share/miniconda/envs /home/runner/eos -name "python*" -path "*eos6m2k*" 2>/dev/null
+          find /home/runner/eos -name "python" 2>/dev/null | head
+          echo "==== conda env list ===="; conda env list
+          echo "==== run.sh in bundle (if still there) ===="; find /home/runner/eos -path "*framework/run.sh" -exec cat {} \; 2>/dev/null
