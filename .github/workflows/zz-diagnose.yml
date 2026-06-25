@@ -18,10 +18,18 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + capture run.sh serve trace
+      - name: Fetch + fine timeline correlated with serve/500
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          rm -f /tmp/runsh.log
-          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 || true
-          echo "================ /tmp/runsh.log (the served run.sh execution + main.py stderr + rc) ================"
-          cat /tmp/runsh.log 2>/dev/null || echo "(run.sh never executed during serve)"
+          EXP=/usr/share/miniconda/envs/eos6m2k/bin/python
+          : > /tmp/timeline.txt
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 &
+          FPID=$!
+          while kill -0 $FPID 2>/dev/null; do
+            if [ -e "$EXP" ]; then S=PRESENT; else S=MISSING; fi
+            echo "$(date +%H:%M:%S) py=$S realenv=$(ls -d /usr/share/miniconda/envs/eos6m2k 2>/dev/null && echo yes || echo no)" >> /tmp/timeline.txt
+            sleep 0.5
+          done
+          echo "==== timeline (env python existence over time) ===="; uniq -f1 /tmp/timeline.txt | tail -50
+          echo "==== serve 'successfully served' + first 500 timestamps from session logs ===="
+          grep -rhniE "successfully served|500 Server Error|Connection refused|Server response received|Batch of size" "$HOME/eos/sessions" 2>/dev/null | sed -E 's/\|.*\| / | /' | head -15
