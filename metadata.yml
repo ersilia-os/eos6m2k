@@ -1,6 +1,6 @@
 Identifier: eos6m2k
 Slug: mole-antimicrobial
-Status: In maintenance
+Status: Ready
 Title: MolE antimicrobial potential
 Description: A publicly available dataset accounting for the effect of 1,197 
   marketed drugs against 40 bacterial strains was used to train an XGBoost 
@@ -75,7 +75,7 @@ Source Code: https://github.com/rolayoalarcon/mole_antimicrobial_potential
 License: MIT
 Contributor: arnaucoma24
 Incorporation Date: '2025-08-21'
-Last Packaging Date: '2025-09-05'
+Last Packaging Date: '2026-06-25'
 Release: v2.0.2
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos6m2k
@@ -84,9 +84,9 @@ Docker Architecture:
   - ARM64
 Model Size: 811.0
 Environment Size: 2245.0
-Image Size: 8656.27
-Computational Performance 1: 32.37
-Computational Performance 2: 21.88
-Computational Performance 3: 22.48
-Computational Performance 4: 77.34
-Computational Performance 5: 317.06
+Image Size: 4615.14
+Computational Performance 1: 33.97
+Computational Performance 2: 22.14
+Computational Performance 3: 25.41
+Computational Performance 4: 90.32
+Computational Performance 5: 363.6
