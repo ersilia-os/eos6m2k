@@ -18,22 +18,10 @@ jobs:
         run: |
           conda run -n base git-lfs install
           conda run -n base python -m pip install "git+https://github.com/ersilia-os/ersilia.git"
-      - name: Fetch + timestamp env-python existence + locate real model python
+      - name: Fetch + capture run.sh serve trace
         env: { MODEL_ID: eos6m2k, PYTHONUNBUFFERED: "1" }
         run: |
-          EXP=/usr/share/miniconda/envs/eos6m2k/bin/python
-          ( conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 ) &
-          FPID=$!
-          ( while kill -0 $FPID 2>/dev/null; do
-              if [ -e "$EXP" ]; then S=PRESENT; else S=MISSING; fi
-              echo "$(date +%H:%M:%S) expected_python=$S"
-              sleep 1
-            done ) | uniq -f1 | tail -40 > /tmp/timeline.txt
-          echo "==== expected python path: $EXP ===="
-          echo "==== timeline of expected python existence during fetch ===="
-          cat /tmp/timeline.txt
-          echo "==== ALL python exes under miniconda/envs and eos dirs matching eos6m2k ===="
-          find /usr/share/miniconda/envs /home/runner/eos -name "python*" -path "*eos6m2k*" 2>/dev/null
-          find /home/runner/eos -name "python" 2>/dev/null | head
-          echo "==== conda env list ===="; conda env list
-          echo "==== run.sh in bundle (if still there) ===="; find /home/runner/eos -path "*framework/run.sh" -exec cat {} \; 2>/dev/null
+          rm -f /tmp/runsh.log
+          conda run -n base bash -c "ersilia -v fetch $MODEL_ID --from_dir $MODEL_ID" > /tmp/fetch.log 2>&1 || true
+          echo "================ /tmp/runsh.log (the served run.sh execution + main.py stderr + rc) ================"
+          cat /tmp/runsh.log 2>/dev/null || echo "(run.sh never executed during serve)"
