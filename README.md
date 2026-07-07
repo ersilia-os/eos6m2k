@@ -48,7 +48,7 @@ _10 of 43 columns are shown_
 - **S3 Storage**: [https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip](https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip)
 
 ### Resource Consumption
-- **Model Size (Mb):** `811`
+- **Model Size (Mb):** `794`
 - **Environment Size (Mb):** `2245`
 - **Image Size (Mb):** `4615.14`
 
