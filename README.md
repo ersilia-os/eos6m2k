@@ -1,6 +1,6 @@
 # MolE antimicrobial potential
 
-Scores a compound for growth inhibition across 40 bacterial strains and condenses the result into overall and Gram-specific antimicrobial potential scores. An XGBoost classifier was fitted over self-supervised MolE embeddings using a public screen of 1,197 marketed drugs against those strains. The approach recovered recent growth-inhibitory compounds structurally unlike existing antibiotics, and three human-targeted drugs predicted as active were confirmed experimentally, giving the model direct prospective support.
+Scores a compound for growth inhibition against 40 bacterial strains representative of the human gut microbiome, then condenses those probabilities into overall and Gram-specific antimicrobial potential scores computed as log-geometric means. An XGBoost classifier sits on frozen MolE embeddings, trained on the public screen by Maier and colleagues of 1,197 marketed drugs against those strains. It recovered recently reported antibiotics unlike existing chemotypes, and three of six prioritised compounds, all human-targeted drugs, were experimentally confirmed as growth inhibitors.
 
 This model was incorporated on 2025-08-21.Last packaged on 2026-07-07.
 
