@@ -2,7 +2,8 @@
 
 Scores a compound for growth inhibition against 40 bacterial strains representative of the human gut microbiome, then condenses those probabilities into overall and Gram-specific antimicrobial potential scores computed as log-geometric means. An XGBoost classifier sits on frozen MolE embeddings, trained on the public screen by Maier and colleagues of 1,197 marketed drugs against those strains. It recovered recently reported antibiotics unlike existing chemotypes, and three of six prioritised compounds, all human-targeted drugs, were experimentally confirmed as growth inhibitors.
 
-This model was incorporated on 2025-08-21.Last packaged on 2026-07-07.
+This model was incorporated on 2025-08-21.
+Last packaged on 2026-07-07.
 
 ## Information
 ### Identifiers
@@ -46,6 +47,7 @@ _10 of 43 columns are shown_
 - **DockerHub**: [https://hub.docker.com/r/ersiliaos/eos6m2k](https://hub.docker.com/r/ersiliaos/eos6m2k)
 - **Docker Architecture:** `AMD64`, `ARM64`
 - **S3 Storage**: [https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip](https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip)
+- **Apptainer**: [https://models-sif.s3.eu-north-1.amazonaws.com/eos6m2k_v2.sif](https://models-sif.s3.eu-north-1.amazonaws.com/eos6m2k_v2.sif)
 
 ### Resource Consumption
 - **Model Size (Mb):** `794`
