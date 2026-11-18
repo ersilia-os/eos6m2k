@@ -77,7 +77,7 @@ License: MIT
 Contributor: arnaucoma24
 Incorporation Date: '2025-08-21'
 Last Packaging Date: '2026-07-07'
-Release: v2.1.0
+Release: v2.1.1
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos6m2k.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos6m2k
 Docker Architecture:
